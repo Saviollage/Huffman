@@ -69,9 +69,9 @@ void countFreq(string txt, vector<node> &letterList) //cria o vetor de frequenci
     for (int i = 0; i < txt.size(); i++) //percorre cada letra do texto
     {
         aux.letter = tolower(txt[i]); //aux recebe cada letra
-        aux.freq = 0;
-        aux.left = NULL;
-        aux.right = NULL;
+        aux.freq = 0;                 //condiçoes iniciais
+        aux.left = NULL;              //condiçoes iniciais
+        aux.right = NULL;             //condiçoes iniciais
 
         if (verify(aux, letterList)) //se a letra nao extiste, ele a aloca no vetor
         {
@@ -86,7 +86,7 @@ void countFreq(string txt, vector<node> &letterList) //cria o vetor de frequenci
             letterList.at(i).letter = "[]";
     }
 
-    organize(letterList);
+    organize(letterList); //ordena o vetor
 }
 
 node *buildHuffman(vector<node> letterList) //faz huffamn
@@ -97,10 +97,10 @@ node *buildHuffman(vector<node> letterList) //faz huffamn
 
     while (letterList.size() > 1) //faz essa verificação pq nosso codigo reduz o tamanho do vetor a cada laço
     {
-        aux1 = letterList.at(letterList.size() - 1);
+        aux1 = letterList.at(letterList.size() - 1); //para receber os dois ultimos elementos do vetor
         aux2 = letterList.at(letterList.size() - 2);
 
-        //é necessario criar novo nó pra cada um pq no final desse laco os elementos dos vetores sao 'excluidos'
+        //criamos dois nós, min1 e min2 para aloca-los na arvore
         min1 = new node;
         min1->letter = aux1.letter;
         min1->freq = aux1.freq;
@@ -113,46 +113,42 @@ node *buildHuffman(vector<node> letterList) //faz huffamn
         min2->right = aux2.right;
         min2->left = aux2.left;
 
-        //cria o root pra depois inserir no vetor
+        //cria o root, para ser formado pela junção dos dois menores valores do vetor
         root = new node;
         root->letter = min2->letter + min1->letter;
         root->freq = min2->freq + min1->freq;
         root->left = min2;
         root->right = min1;
 
-        letterList.pop_back();
+        letterList.pop_back(); //remove os dois ultimos elementos, pois ja etao alocados na arvore
         letterList.pop_back();
 
-        letterList.push_back(*root);
-        organize(letterList);
-
-        //cout << letterList.size() << '\n';
-        //showVec(letterList);
-        //cout << endl;
+        letterList.push_back(*root); //adiciona o elemento apos a juncao dos menores
+        organize(letterList);        //ordena
     }
 
     return root;
 }
 
-void put(vector<node> &letterList, node root)
+void put(vector<node> &letterList, node root) //coloca o valor do codigo de cada letra da arvore no vetor
 {
     for (int i = 0; i < letterList.size(); i++)
-        if (letterList.at(i).letter == root.letter) //Procura no vetor qual letra que é
+        if (letterList.at(i).letter == root.letter)
             letterList.at(i).code = root.code;
 }
 
 void coder(vector<node> &letterList, node *root)
 {
-    if (root->left != NULL || root->right != NULL) // se não é folha
+    if (root->left != NULL || root->right != NULL) // nao é folha
     {
-        root->right->code = root->code + "1";
-        root->left->code = root->code + "0";
+        root->right->code = root->code + "1"; //se anda pra direita, codigo recebe 1
+        root->left->code = root->code + "0";  // se anda pra esquerda codigo recebe 0
 
         coder(letterList, root->left);
         coder(letterList, root->right);
     }
 
-    put(letterList, *root);
+    put(letterList, *root); //preenche o vetor
 }
 
 void menu()
